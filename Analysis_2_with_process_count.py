@@ -19,7 +19,7 @@ config_file = "config.yaml"
 
 def if_deviceid_exist(map):
         if  "deviceId" in map and "deviceIdType" in map:
-        return True
+                return True
         return False
 
 def extract_properties_from_header_map(map, key):
@@ -29,13 +29,13 @@ def extract_properties_from_header_map(map, key):
 def convert_context_headers_to_map(context_headers):
         temp_json = json.loads(context_headers)
         if "X-EBAY-C-ENDUSERCTX" in temp_json:
-        x_ebay_c_enduserctx = temp_json["X-EBAY-C-ENDUSERCTX"]
-        header_list = x_ebay_c_enduserctx.split(",")
-        header_map = {}
-        for _map in header_list:
-                row = _map.split("=")
-                header_map[row[0]] = row[1]
-        return header_map
+                x_ebay_c_enduserctx = temp_json["X-EBAY-C-ENDUSERCTX"]
+                header_list = x_ebay_c_enduserctx.split(",")
+                header_map = {}
+                for _map in header_list:
+                        row = _map.split("=")
+                        header_map[row[0]] = row[1]
+                return header_map
         return
 
 def curlComsByPurchaseOrderId(orderId):
@@ -50,10 +50,10 @@ def curlComsByPurchaseOrderId(orderId):
         PurchaseOrder = json_content["PurchaseOrder"]
         attributes = PurchaseOrder[0]["attributes"]
         for attribute in attributes:
-        if "name" in attribute and attribute["name"] == "CONTEXT_HEADERS":
-                content_headers = attribute["value"]
-        else:
-                continue
+                if "name" in attribute and attribute["name"] == "CONTEXT_HEADERS":
+                        content_headers = attribute["value"]
+                else:
+                        continue
         return content_headers
 
 
@@ -79,18 +79,18 @@ def check_if_all_purchase_order_without_device_in_coms_response(x):
         orderId = ""
         yml = load_config()
         if jsonA: 
-        orderId = extractPurchaseOrderId(jsonA)
-        if orderId and re.match('\d{14}', orderId): 
-                context_header = curlComsByPurchaseOrderId(orderId)
-                header_map = convert_context_headers_to_map(context_header)
-                if header_map and if_deviceid_exist(header_map):
-                        write_purchase_order_without_device_in_coms_response(orderId)
-        else:
-                logging.basicConfig(filename=yml["logging_file"], filemode='w', format='%(processName)s- %(threadName)s- %(levelname)s - %(message)s')
-                logging.warning("current page doesn't contain purchase order id or puchase order id format wrong. url=" + x)
+                orderId = extractPurchaseOrderId(jsonA)
+                if orderId and re.match('\d{14}', orderId): 
+                        context_header = curlComsByPurchaseOrderId(orderId)
+                        header_map = convert_context_headers_to_map(context_header)
+                        if header_map and if_deviceid_exist(header_map):
+                                write_purchase_order_without_device_in_coms_response(orderId)
+                else:
+                        logging.basicConfig(filename=yml["logging_file"], filemode='w', format='%(processName)s- %(threadName)s- %(levelname)s - %(message)s')
+                        logging.warning("current page doesn't contain purchase order id or puchase order id format wrong. url=" + x)
         global processed_count            
         with lock:
-        processed_count += 1
+                processed_count += 1
         print("processed_count={}".format(processed_count))
 
 
@@ -114,7 +114,7 @@ def proxyPost(url, param):
 def load_config():
         global config_file
         with open(config_file, 'r') as ymlfile:
-        return yaml.load(ymlfile)
+                return yaml.load(ymlfile)
 
 
 def count_no_deviceid_orders():
@@ -122,8 +122,7 @@ def count_no_deviceid_orders():
         url_file = open(yml["url_file"], "r")
         executor = ThreadPoolExecutor(max_workers=10)
         for x in url_file:
-        executor.submit(check_if_all_purchase_order_without_device_in_coms_response, x)
-        #     print("done,{}".format(processed_count))
+                executor.submit(check_if_all_purchase_order_without_device_in_coms_response, x)
 
 def write_purchase_order_without_device_in_coms_response(orderId):
         yml = load_config()
