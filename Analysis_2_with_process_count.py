@@ -72,13 +72,8 @@ def extractPurchaseOrderId(jsonA):
       orderId = innerObj["data"]
       return orderId
 
-def core_handler(url):
-    global processed_count
-    with lock:
-        processed_count = processed_count + 1
 
-
-def process(x):
+def check_if_all_purchase_order_without_device_in_coms_response(x):
     jsonA = parse_sherlock_page(x)
     orderId = ""
     yml = load_config()
@@ -88,8 +83,7 @@ def process(x):
                 context_header = curlComsByPurchaseOrderId(orderId)
                 header_map = convert_context_headers_to_map(context_header)
                 if header_map and if_deviceid_exist(header_map):
-                    found_in_coms_ids_f = open(yml["invalid_device_id_but_found_in_coms"], "w")
-                    found_in_coms_ids_f.close()
+                    write_purchase_order_without_device_in_coms_response(orderId)
         else:
                 logging.basicConfig(filename=yml["logging_file"], filemode='w', format='%(processName)s- %(threadName)s- %(levelname)s - %(message)s')
                 logging.warning("current page doesn't contain purchase order id or puchase order id format wrong. url=" + x)
@@ -97,7 +91,6 @@ def process(x):
     with lock:
         processed_count += 1
     print("processed_count={}".format(processed_count))
-
 
 
 def proxyGet(url, param):
@@ -129,16 +122,14 @@ def count_no_deviceid_orders():
     executor = ThreadPoolExecutor(max_workers=10)
 
     for x in url_file:
-        executor.submit(process, x)
+        executor.submit(check_if_all_purchase_order_without_device_in_coms_response, x)
     print("done,{}".format(processed_count))
 
-def check_if_all_purchase_order_without_device_in_coms_response():
-    yml = load_config()
-    url_file = open(yml["url_file"], "r")
-    executor = ThreadPoolExecutor(max_workers=10)
-
-    for x in url_file:
-        executor.submit(process, x)
+def write_purchase_order_without_device_in_coms_response(orderId):
+        yml = load_config()
+        found_in_coms_ids_f = open(yml["invalid_device_id_but_found_in_coms"], "w")
+        found_in_coms_ids_f.write(orderId)
+        found_in_coms_ids_f.close()
 
 
 if __name__ == "__main__":
