@@ -17,7 +17,7 @@ config_file = "config.yaml"
 
 
 def if_deviceid_exist(map):
-    if  "deviceId" not in map and "deviceIdType" not in map:
+    if  "deviceId" in map and "deviceIdType" in map:
         return True
     return False
 
