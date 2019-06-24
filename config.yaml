@@ -1,0 +1,5 @@
+invalid_device_id_but_found_in_coms: /Users/zaniu/Documents/logs/analysis/invalid_device_id_but_found_in_coms.txt
+logging_file: /Users/zaniu/Documents/logs/analysis/purchase_order_not_found.txt
+logging_file1: /Users/zaniu/Documents/logs/analysis/user_agent1.txt
+url_file: /Users/zaniu/Documents/logs/analysis/urlFile.txt
+yubikey: ''
