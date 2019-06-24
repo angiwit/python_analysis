@@ -123,7 +123,7 @@ def count_no_deviceid_orders():
 
     for x in url_file:
         executor.submit(check_if_all_purchase_order_without_device_in_coms_response, x)
-    print("done,{}".format(processed_count))
+#     print("done,{}".format(processed_count))
 
 def write_purchase_order_without_device_in_coms_response(orderId):
         yml = load_config()
